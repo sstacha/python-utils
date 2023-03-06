@@ -3,7 +3,7 @@ from datetime import datetime, timezone, time
 from random import choice
 from string import ascii_lowercase
 
-from utils.core import convert, logging
+from ubercode.utils import convert, logging
 
 log = logging.ColorLogger("test_convert")
 

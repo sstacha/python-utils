@@ -2,7 +2,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 
-from utils.core.urls import ParsedUrl
+from ubercode.utils.urls import ParsedUrl
 
 
 class TestUrls(unittest.TestCase):

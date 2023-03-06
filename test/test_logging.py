@@ -2,7 +2,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 
-from utils.core import logging
+from ubercode.utils import logging
 
 
 class TestLogging(unittest.TestCase):

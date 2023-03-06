@@ -1,9 +1,9 @@
 From:
 https://docs.djangoproject.com/en/3.0/intro/reusable-apps/
 
-dont forget to increment the version number in setup.py
-NOTE: temporarily move the testapp to trash using file manager so it doesn't build! then restore after!
-NOTE: change from empty env with just python to one with twine & wheel
+don't forget to increment the version number in setup.py
+temporarily move the testapp to trash using file manager so it doesn't build! then restore after!
+change from empty env with just python to one with twine & wheel
 delete any dist or eggs
 python setup.py sdist
 

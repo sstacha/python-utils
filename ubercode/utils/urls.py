@@ -195,7 +195,7 @@ if __name__ == "__main__":
     # parsed_url = ParsedUrl(test_uri)
     # print(f"root domain [{test_uri}]: {parsed_url.get_root_domain()}")
     # print(f"url:{parsed_url.url}")
-    test_uri = "/?id=1&b=2"
+    test_uri = "/?id=1&b=&c=3"
     parsed_url = ParsedUrl(test_uri, default_netloc='ex.org')
     print(f"root domain [{test_uri}]: {parsed_url.root_domain}")
     print(f"url:{parsed_url.url}")

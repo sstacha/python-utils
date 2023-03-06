@@ -1,9 +1,8 @@
 """
-A collection of conversion utilities that can be used without circular dependencies.  For example,
-datetime import does not!
+A collection of conversion utilities that can be used without circular dependencies.
 """
 import re
-from typing import List
+from typing import List, Any
 from datetime import datetime, timezone
 
 # basic boolean true or false values
@@ -98,7 +97,7 @@ def to_int(value, default: int = 0, none_to_default: bool = True, suppress_warni
         return default
 
 
-def to_none(value, values_to_convert: List[str] = ('None', ''), strip_value=True):
+def to_none(value: Any, values_to_convert: List[str] = ('None', ''), strip_value=True):
     """
     Convert a string value to python None if it matches values_to_convert list of strings
     NOTE: this is helpful for converting string parameter values to None for storage in databases
@@ -124,7 +123,7 @@ def to_iso8601(value: datetime = None, tz: timezone = None) -> str:
     return value.isoformat(timespec='seconds')
 
 
-def from_iso8601_compact(value=None, tz=timezone.utc):
+def from_iso8601_compact(value: Any = None, tz: timezone = timezone.utc):
     _value = value
     if isinstance(value, str):
         if len(value.strip()) == 0:
@@ -156,7 +155,7 @@ def from_iso8601_compact(value=None, tz=timezone.utc):
     return _value
 
 
-def to_date(value=None, tz=timezone.utc, none_to_now=True, suppress_warnings=True):
+def to_date(value: Any = None, tz: timezone = timezone.utc, none_to_now: bool = True, suppress_warnings: bool = True):
     """
     Convert string to python date.  Currently, only concerned about iso8601 and db type formats.
     None returns current date by default but can be overridden with none_to_now optional parameter
