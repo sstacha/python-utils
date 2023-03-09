@@ -1,5 +1,8 @@
+import os
 import unittest
-from datetime import datetime, timezone, time
+from contextlib import redirect_stdout
+from io import StringIO
+from datetime import datetime, timezone
 from random import choice
 from string import ascii_lowercase
 
@@ -32,6 +35,20 @@ class TestConvert(unittest.TestCase):
         original_str = 0
         self.assertEqual(0, convert.strip(original_str), "invalid value didn't return original value as expected")
 
+    def test_dump(self):
+        # test we can dump an instance of a variable like log and get its current values printed to stdout
+        with redirect_stdout(StringIO()) as sout:
+            convert.dump(log)
+        log_output = sout.getvalue()
+        self.assertTrue("'_level': 'INFO'" in log_output)
+        self.assertTrue("'name': 'test_convert'" in log_output)
+        # test that a non class item without a dict gives the string representation
+        with redirect_stdout(StringIO()) as sout:
+            convert.dump("Test String")
+        log_output = sout.getvalue()
+        # note: print adds a newline
+        self.assertEqual(log_output, "Test String" + os.linesep)
+
     # -------- helper conversions ----------
     def test_mask(self):
         """ Tests the mask helper conversion function """
@@ -51,6 +68,13 @@ class TestConvert(unittest.TestCase):
     # -------- primitive conversions --------
     def test_primitive_conversions(self):
         """ Tests the primitive conversion utility functions """
+
+        # --- to_str
+        # -----------
+        # test that by default to_str will return an empty sting instead of 'None'
+        self.assertEqual("", convert.to_str(None))
+        # test that to_str will return the 'None' if none_to_empty is false
+        self.assertEqual("None", convert.to_str(None, none_to_empty=False))
 
         # --- to_bool
         # -----------
@@ -75,13 +99,13 @@ class TestConvert(unittest.TestCase):
         # --- is_true_value
         # -----------------
         # truthy value that doesn't equate to true should be False
-        self.assertEqual(False, convert.is_true_value("some string value"))
-        log.info("convert.is_true_value: Testing true values " + str(convert.TRUE_VALUES))
+        self.assertEqual(False, convert.is_true("some string value"))
+        log.info("convert.is_true: Testing true values " + str(convert.TRUE_VALUES))
         # true values should be True
         for true_value in convert.TRUE_VALUES:
-            self.assertEqual(True, convert.is_true_value(true_value))
+            self.assertEqual(True, convert.is_true(true_value))
         # invalid value like date should be False
-        self.assertEqual(False, convert.is_true_value(datetime.now()))
+        self.assertEqual(False, convert.is_true(datetime.now()))
 
         # --- to_js_bool
         # --------------

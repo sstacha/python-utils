@@ -77,13 +77,13 @@ class ColorLogger:
     # or
     # VALID_ARGUMENTS: typing.List[Argument] = list(typing.get_args(Argument))
     # NOTE: maybe do a generator to create the dict of values or use index if list stays in order (should)
-    def __init__(self, name: str, level: str or int or None = None):
+    def __init__(self, name: str, level: str or int or None = None, color_output: bool = True):
         self.name = name
         self._level = self.get_initial_log_level(level)
         self.level = self._level
         self.indention = 0
         self.indent_spaces = 4
-        self.color_output = True
+        self.color_output = color_output
         self.repeat_msg = '.'
         self.repeat_max = 100
         self.repeat_cnt = 0

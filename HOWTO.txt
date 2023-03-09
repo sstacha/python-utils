@@ -9,6 +9,7 @@ python setup.py sdist
 
 To Test:
 pip install --upgrade <path to app>/dist/python-ubercode-utils-1.0.1.tar.gz
+pip install --upgrade ../python_ubercode_utils/dist/python-ubercode-utils-1.0.1.tar.gz
 
 To Install:
 NOTE: be sure to use the pypi virtual env with twine and wheel instead of the project one

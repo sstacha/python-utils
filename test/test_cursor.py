@@ -1,13 +1,16 @@
 import unittest
 import sqlite3
+from pathlib import Path
 
 from ubercode.utils import cursor
 
 class TestCursor(unittest.TestCase):
+    # we will start with the default dict for a new django install
+    BASE_DIR = Path(__file__).resolve().parent
 
     # -------- common usages ----------
     def test_cursor(self):
-        with sqlite3.connect('example.db') as conn:
+        with sqlite3.connect(self.BASE_DIR / 'example.db') as conn:
             # create our table
             cur = conn.cursor()
             sql = """

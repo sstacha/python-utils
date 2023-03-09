@@ -4,6 +4,7 @@ A collection of conversion utilities that can be used without circular dependenc
 import re
 from typing import List, Any
 from datetime import datetime, timezone
+from pprint import pprint
 
 # basic boolean true or false values
 # NOTE: we will assume a to_lower conversion
@@ -12,7 +13,7 @@ FALSE_VALUES = [None, False, 0, "0", "n", "f", "false", "no", "off"]
 
 
 # -------- helper utilities ----------
-def strip(value: str or None, strip_chars: str = None, left: bool = True, right: bool = True):
+def strip(value: str or None, strip_chars: str = None, left: bool = True, right: bool = True) -> str or None:
     """
     return stripped value if possible or original value
     :param value: str value to be stripped
@@ -33,7 +34,36 @@ def strip(value: str or None, strip_chars: str = None, left: bool = True, right:
     return value
 
 
+def dump(value: Any, pretty=True) -> None:
+    """
+    Dumps the value to std out (either list of atts if obj or str if not)
+    :param value: any value instance
+    :param pretty: should we format the output using pprint
+    :return: None (prints to stdout)
+    """
+    if hasattr(value, "__dict__"):
+        if pretty:
+            pprint(vars(value), indent=4)
+        else:
+            print(vars(value))
+    else:
+        print(str(value))
+
+
 # -------- primitive conversions --------
+def to_str(value: Any, none_to_empty: bool = True) -> str:
+    """
+    While not absolutely necessary; nice to have a common function to convert None values or not
+    NOTE: this is exactly the same as [str(x) if x is not None else ''] if none_to_empty is true
+    :param value: Any value
+    :param none_to_empty: should we convert None to ''
+    :return: string representation of the value
+    """
+    if none_to_empty and value is None:
+        return ""
+    return str(value)
+
+
 def to_bool(value) -> bool:
     """
     Convert <value> to boolean.  Mainly handles returning false values passed as parameters which
@@ -48,7 +78,7 @@ def to_bool(value) -> bool:
     return bool(value)
 
 
-def is_true_value(value: int or bool or str) -> bool:
+def is_true(value: int or bool or str) -> bool:
     """
     Convert <value> to a True boolean value.  Useful when you want to convert a passed parameter to True if it matches
     one of the defined TRUE_VALUES above; otherwise False.
