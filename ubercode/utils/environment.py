@@ -146,7 +146,11 @@ class Environment:
             we need to say what the variable name is.  Defaults to Django DATABASES
         @return dict with replaced values
         """
-        items = self._env_map.items() or os.environ.items()
+        items = []
+        if hasattr(self._env_map, "items"):
+            items = self._env_map.items()
+        elif hasattr(os.environ, "items"):
+            items = os.environ.items()
         for k, v in items:
             # _logger.debug(f'key: {k} value: {v}')
             db_parts = k.split('__')

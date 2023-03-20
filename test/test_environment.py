@@ -105,6 +105,8 @@ class TestEnvironment(unittest.TestCase):
         # test our password is encoded when logged
         self.assertTrue("Test_insecure_password" not in log_output)
         self.assertTrue("Test_************sword" in log_output)
+        # test a None still works for initialization
+        self.assertIsNotNone(Environment())
 
 
 if __name__ == '__main__':
