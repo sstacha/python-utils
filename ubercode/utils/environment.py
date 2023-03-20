@@ -16,8 +16,9 @@ class Environment:
     simple class to encapsulate overriding environment variable values if they exist
     """
     VARIABLE_DATA_TYPES = ["str", "bool", "int", "date"]
+    DEFAULT_SECRET_PROPERTIES = ("PW", "PWD", "PASSWORD")
 
-    def __init__(self, logger: ColorLogger = None, secret_properties: Tuple[str] = ("PW", "PWD", "PASSWORD"), environment_variable_map = None):
+    def __init__(self, logger: ColorLogger = None, secret_properties: Tuple[str] = DEFAULT_SECRET_PROPERTIES, environment_variable_map = None):
         """
         Environment can be initialized with default values or overloaded as needed
         NOTE: environment_variable_map is for testing; should be left null and actually use os.env for production
