@@ -3,6 +3,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 from ubercode.utils.urls import ParsedUrl
+from ubercode.utils.urls import ParsedQueryString
 
 
 class TestUrls(unittest.TestCase):
@@ -86,6 +87,11 @@ class TestUrls(unittest.TestCase):
         # test removing a param
         parsed_url.del_param("u")
         self.assertEqual("//test.local.net:8000/test/index.html?z=1&v=4#test2", str(parsed_url))
+
+        # bugfix #1: test that we don't truncate data if there is an = in the data
+        test_qs = "id=1&b=2&x=1234=56&z=3"
+        parsed_qs = ParsedQueryString(test_qs)
+        self.assertEqual(test_qs, str(parsed_qs))
 
 
 if __name__ == '__main__':

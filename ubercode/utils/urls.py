@@ -1,5 +1,6 @@
 import os
 from urllib.parse import urlsplit
+from ubercode.utils.convert import to_str
 
 
 class ParsedQueryString:
@@ -16,9 +17,19 @@ class ParsedQueryString:
         exp_params = self.qs.split("&")
         self.params = {}
         for exp_param in exp_params:
-            items = exp_param.split("=")
-            if len(items) >= 2:
-                self.params[items[0]] = items[1]
+            param = to_str(exp_param)
+            key = ""
+            value = ""
+            pos = param.find("=")
+            if pos > -1:
+                key = param[:pos]
+                if len(param) > pos + 1:
+                    value = param[pos + 1:]
+            else:
+                if param:
+                    key = param
+            if key:
+                self.params[key] = value
 
     def __str__(self):
         """
