@@ -1,10 +1,11 @@
 import unittest
+import time
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
 from ubercode.utils import logging, convert
-from ubercode.utils.environment import Environment
+from ubercode.utils.environment import Environment, Timer
 
 
 class TestEnvironment(unittest.TestCase):
@@ -107,6 +108,14 @@ class TestEnvironment(unittest.TestCase):
         self.assertTrue("Test_************sword" in log_output)
         # test a None still works for initialization
         self.assertIsNotNone(Environment())
+
+    def test_timer(self):
+        timer = Timer().start()
+        time.sleep(3)
+        timer.stop()
+        print(str(timer))
+        self.assertEqual(timer.startTime.second + 3, timer.endTime.second)
+        self.assertTrue(timer.duration.startswith('3'))
 
 
 if __name__ == '__main__':

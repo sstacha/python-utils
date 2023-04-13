@@ -3,12 +3,45 @@ A collection of environment utilities that can be used without circular dependen
 should be usable inside django settings.py!
 """
 import os
+import time
 from datetime import datetime
 from typing import Any, Tuple
 from ubercode.utils.logging import ColorLogger
 from ubercode.utils import convert
 
 _utils_settings_logger = ColorLogger("utils.environment")
+
+
+class Timer:
+    """
+    simple timer class to encapsulate starting, stopping and getting info from timeing
+    start_time = datetime point in time when started
+    end_time = datetime point in time when ended
+    _perf_start = arbitrary start counter (not a point in time)
+    _perf_end = arbitrary end counter (not a point in time)
+    duration = string representing the duration in human-readable format
+    """
+    def __init__(self):
+        self.startTime = None
+        self.endTime = None
+        self._perf_start = None
+        self._perf_end = None
+        self.duration = None
+
+    def start(self):
+        self.startTime = convert.to_date().astimezone()
+        self._perf_start = time.perf_counter()
+        return self
+
+    def stop(self):
+        self.endTime = convert.to_date().astimezone()
+        if not self._perf_start:
+            self._perf_start = time.perf_counter()
+        self._perf_end = time.perf_counter()
+        self.duration = convert.to_human_readable(self._perf_end - self._perf_start)
+
+    def __str__(self):
+        return f"START: {self.startTime}\nEND: {self.endTime}\nDURATION: {self.duration}"
 
 
 class Environment:

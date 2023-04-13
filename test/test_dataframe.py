@@ -17,11 +17,13 @@ class TestDataframe(unittest.TestCase):
         log_lines = sout.getvalue()
         label_string = logging.TermColor.OKBLUE + "Test Label"
         self.assertTrue(str(log_lines).startswith(label_string))
-        # always doesn't have a color so lets change the color and test for it
+        # always doesn't have a color so let's change the color and test for it
         with redirect_stdout(StringIO()) as sout:
-            tlog.dataframe("Test Dataframe", "Test Label", color="WARN")
+            tlog.dataframe("Test Dataframe", "Test Label", color="WARN", df_color="DEBUG")
         log_lines = sout.getvalue()
-        content_string = logging.TermColor.WARNING + "Test Dataframe"
+        content_string = logging.TermColor.WARNING + "Test Label"
+        self.assertTrue(content_string in str(log_lines))
+        content_string = logging.TermColor.F_DarkGray + "Test Dataframe"
         self.assertTrue(content_string in str(log_lines))
 
 

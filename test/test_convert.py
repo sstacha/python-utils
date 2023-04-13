@@ -49,6 +49,9 @@ class TestConvert(unittest.TestCase):
         # note: print adds a newline
         self.assertEqual(log_output, "Test String" + os.linesep)
 
+    def test_human_readable(self):
+        pass
+
     # -------- helper conversions ----------
     def test_mask(self):
         """ Tests the mask helper conversion function """

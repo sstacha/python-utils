@@ -50,6 +50,22 @@ def dump(value: Any, pretty=True) -> None:
         print(str(value))
 
 
+def to_human_readable(duration: int) -> str:
+    days = duration // 86400
+    hours = duration // 3600 % 24
+    minutes = duration // 60 % 60
+    seconds = duration % 60
+    human_duration = ""
+    if days >= 1:
+        human_duration += f"{days} days, "
+    if hours >= 1:
+        human_duration += f"{hours} hours, "
+    if minutes >= 1:
+        human_duration += f"{minutes} minutes, "
+    human_duration += f"{seconds:.2f} seconds"
+    return human_duration
+
+
 # -------- primitive conversions --------
 def to_str(value: Any, none_to_empty: bool = True) -> str:
     """
