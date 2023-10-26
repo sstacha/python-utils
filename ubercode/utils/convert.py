@@ -201,7 +201,7 @@ def from_iso8601_compact(value: Any = None, tz: timezone = timezone.utc):
     return _value
 
 
-def to_date(value: Any = None, tz: timezone = timezone.utc, none_to_now: bool = True, suppress_warnings: bool = True):
+def to_date(value: Any = None, tz: timezone or None = timezone.utc, none_to_now: bool = True, suppress_warnings: bool = True):
     """
     Convert string to python date.  Currently, only concerned about iso8601 and db type formats.
     None returns current date by default but can be overridden with none_to_now optional parameter
@@ -216,15 +216,16 @@ def to_date(value: Any = None, tz: timezone = timezone.utc, none_to_now: bool = 
             return datetime.now(tz)
         else:
             return None
-    try:
-        value = datetime.fromisoformat(value)
-    except ValueError:
+    if isinstance(value, str):
         try:
-            value = from_iso8601_compact(value)
+            value = datetime.fromisoformat(value)
         except ValueError:
-            if not suppress_warnings:
-                print(f"WARNING: exception converting value {str(value)} to date; returning None!")
-            return None
+            try:
+                value = from_iso8601_compact(value)
+            except ValueError:
+                if not suppress_warnings:
+                    print(f"WARNING: exception converting value {str(value)} to date; returning None!")
+                return None
     if tz and isinstance(value, datetime) and not value.tzinfo:
         value = value.replace(tzinfo=tz)
     return value
@@ -248,5 +249,4 @@ def to_mask(value: str or None) -> str or None:
         # append the last quarter of the values up to 6 unmasked
         _mask += value[-_iqtr:]
     return _mask
-
 

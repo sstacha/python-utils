@@ -194,6 +194,11 @@ class TestConvert(unittest.TestCase):
         # and commonly passed as just the date without the time
         # note: stripping the time part using the date() method for comparison
         self.assertEqual(date.date(), convert.to_date("20240131").date())
+        # bug fix: if a datetime is passed we get exception because datetime.fromisoformat(value) expects str only
+        # we should just return the original value instead adding conditional to only alter if type str
+        utc_now_tz = utc_now.replace(tzinfo=timezone.utc)
+        self.assertEqual(utc_now_tz, convert.to_date(utc_now))
+
 
         # --- to_iso8601
         # --------------
