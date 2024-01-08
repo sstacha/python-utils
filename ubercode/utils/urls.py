@@ -69,6 +69,10 @@ class ParsedUrl:
         if default_filepath and default_filepath not in self.filepath:
             # we have a parent path we need to append to the existing one
             self.path = str(PurePath(default_filepath, self.path))
+            # if we only have the default path make sure we have a slash (since we know it is a path)
+            #   note: PurePath will strip it off even if we send it
+            if self.path.endswith(default_filepath) and not self.path.endswith('/'):
+                self.path += '/'
         if default_scheme and not self.parsed.scheme and self.netloc:
             self.scheme = default_scheme
         # one last correction; if we have a scheme but no netloc lets omit the scheme so it doesn't give bad results
@@ -226,5 +230,7 @@ if __name__ == "__main__":
     print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
     test_uri = "http://store.ex.org/go/"
     print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
-    test_uri = ("1.png")
+    test_uri = "1.png"
+    print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
+    test_uri = "#testproduct"
     print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
