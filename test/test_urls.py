@@ -13,6 +13,10 @@ class TestUrls(unittest.TestCase):
     # --- constructor defaults
     # ------------------------
     def test_constructor(self):
+        # test rel with default path
+        rel_uri = "1.jpg"
+        parsed_url = ParsedUrl(rel_uri, default_netloc='ex.org', default_scheme='http', default_filepath='/mdb')
+        self.assertEqual("http://ex.org/mdb/1.jpg", str(parsed_url))
         # test rel url with no defaults gives back the rel url
         test_uri = "/?id=1&b=2"
         parsed_url = ParsedUrl(test_uri)

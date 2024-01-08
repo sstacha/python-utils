@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urlsplit
 from ubercode.utils.convert import to_str
+from pathlib import PurePath
 
 
 class ParsedQueryString:
@@ -56,7 +57,8 @@ class ParsedUrl:
 
         We want a way to ask for a relative or fully qualified url including fragments and querystings or not
     """
-    def __init__(self, url: str, default_netloc: str = None, default_scheme: str = None, allow_fragments: bool = True):
+    def __init__(self, url: str, default_netloc: str = None, default_scheme: str = None,
+                 default_filepath: str = None, allow_fragments: bool = True):
         self.original_url = url
         if self.url_filter(url) is None or len(self.url_filter(url)) == 0:
             raise Exception(
@@ -64,6 +66,9 @@ class ParsedUrl:
         self.parsed = urlsplit(self.url_filter(url), default_scheme or "", allow_fragments=allow_fragments)
         if default_netloc and not self.parsed.netloc:
             self.netloc = default_netloc
+        if default_filepath and default_filepath not in self.filepath:
+            # we have a parent path we need to append to the existing one
+            self.path = str(PurePath(default_filepath, self.path))
         if default_scheme and not self.parsed.scheme and self.netloc:
             self.scheme = default_scheme
         # one last correction; if we have a scheme but no netloc lets omit the scheme so it doesn't give bad results
@@ -221,3 +226,5 @@ if __name__ == "__main__":
     print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
     test_uri = "http://store.ex.org/go/"
     print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
+    test_uri = ("1.png")
+    print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
