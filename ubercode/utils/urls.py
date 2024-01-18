@@ -58,7 +58,7 @@ class ParsedUrl:
         We want a way to ask for a relative or fully qualified url including fragments and querystings or not
     """
     def __init__(self, url: str, default_netloc: str = None, default_scheme: str = None,
-                 default_filepath: str = None, allow_fragments: bool = True):
+                 default_filepath: str = None, allow_fragments: bool = True, symlinks=False):
         self.original_url = url
         if self.url_filter(url) is None or len(self.url_filter(url)) == 0:
             raise Exception(
@@ -68,11 +68,18 @@ class ParsedUrl:
             self.netloc = default_netloc
         if default_filepath and default_filepath not in self.filepath:
             # we have a parent path we need to append to the existing one
-            self.path = str(PurePath(default_filepath, self.path))
+            new_path = str(PurePath(default_filepath, self.path))
+            # note: I don't want .. since this is web urls; using normpath to remove them unless symlinks is true
+            if not symlinks and '..' in new_path:
+                new_path = os.path.normpath(new_path)
+            # PurePath always strips the last path.  If we had a path before appending lets add it back
+            if self.path.endswith('/') and not new_path.endswith('/'):
+                new_path += '/'
             # if we only have the default path make sure we have a slash (since we know it is a path)
             #   note: PurePath will strip it off even if we send it
-            if self.path.endswith(default_filepath) and not self.path.endswith('/'):
-                self.path += '/'
+            if new_path.endswith(default_filepath) or new_path.endswith(default_filepath[:-1]) and not new_path.endswith('/'):
+                new_path += '/'
+            self.path = new_path
         if default_scheme and not self.parsed.scheme and self.netloc:
             self.scheme = default_scheme
         # one last correction; if we have a scheme but no netloc lets omit the scheme so it doesn't give bad results
@@ -215,22 +222,28 @@ if __name__ == "__main__":
     # parsed_url = ParsedUrl(test_uri)
     # print(f"root domain [{test_uri}]: {parsed_url.get_root_domain()}")
     # print(f"url:{parsed_url.url}")
-    test_uri = "/?id=1&b=&c=3"
-    parsed_url = ParsedUrl(test_uri, default_netloc='ex.org')
-    print(f"root domain [{test_uri}]: {parsed_url.root_domain}")
-    print(f"url:{parsed_url.url}")
-    print(f"base: {parsed_url.base}")
-    print(f"rel: {parsed_url.rel}")
-    print(f"url after base: {parsed_url.url}")
-    parsed_url.domain = "ex.org"
-    print(f"root domain [{str(parsed_url)}]: {parsed_url.root_domain}")
-    test_uri = "ex.org/"
-    print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
-    test_uri = "http://www.ex.org/go/"
-    print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
-    test_uri = "http://store.ex.org/go/"
-    print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
-    test_uri = "1.png"
-    print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
-    test_uri = "#testproduct"
-    print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
+    # test_uri = "/?id=1&b=&c=3"
+    # parsed_url = ParsedUrl(test_uri, default_netloc='ex.org')
+    # print(f"root domain [{test_uri}]: {parsed_url.root_domain}")
+    # print(f"url:{parsed_url.url}")
+    # print(f"base: {parsed_url.base}")
+    # print(f"rel: {parsed_url.rel}")
+    # print(f"url after base: {parsed_url.url}")
+    # parsed_url.domain = "ex.org"
+    # print(f"root domain [{str(parsed_url)}]: {parsed_url.root_domain}")
+    # test_uri = "ex.org/"
+    # print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
+    # test_uri = "http://www.ex.org/go/"
+    # print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
+    # test_uri = "http://store.ex.org/go/"
+    # print(f"root domain [{test_uri}]: {ParsedUrl(test_uri).root_domain}")
+    # test_uri = "1.png"
+    # print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
+    # test_uri = "#testproduct"
+    # print(f"test parent fragment only: {ParsedUrl(test_uri, default_netloc='localhost:8000', default_scheme='http', default_path='/mdb/')}")
+    test_uri = "/products/"
+    purl = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000', default_filepath='/blog')
+    print(purl)
+    test_uri = "../products/"
+    purl = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000', default_filepath='/')
+    print(purl)

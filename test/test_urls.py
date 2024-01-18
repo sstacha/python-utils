@@ -101,6 +101,29 @@ class TestUrls(unittest.TestCase):
         parsed_qs = ParsedQueryString(test_qs)
         self.assertEqual(test_qs, str(parsed_qs))
 
+        # bugfix #2: test that we get the correct values when we use a site relative path like /products/ and a
+        #   default_filepath like /blog/; also check for passing or not passing ending slash
+        test_uri = "/products/"
+        parsed_url = ParsedUrl(test_uri, default_scheme="http", default_netloc="localhost:8000",
+                               default_filepath="/blog")
+        self.assertEqual(parsed_url.url, "http://localhost:8000/products/")
+        test_uri = "./products/"
+        parsed_url = ParsedUrl(test_uri, default_scheme="http", default_netloc="localhost:8000",
+                               default_filepath="/blog")
+        self.assertEqual(parsed_url.url, "http://localhost:8000/blog/products/")
+        test_uri = "../products/"
+        parsed_url = ParsedUrl(test_uri, default_scheme="http", default_netloc="localhost:8000",
+                               default_filepath="/blog")
+        self.assertEqual(parsed_url.url, "http://localhost:8000/products/")
+        test_uri = "."
+        parsed_url = ParsedUrl(test_uri, default_scheme="http", default_netloc="localhost:8000",
+                               default_filepath="/blog")
+        self.assertEqual(parsed_url.url, "http://localhost:8000/blog/")
+        test_uri = "."
+        parsed_url = ParsedUrl(test_uri, default_scheme="http", default_netloc="localhost:8000",
+                               default_filepath="/blog/")
+        self.assertEqual(parsed_url.url, "http://localhost:8000/blog/")
+
 
 if __name__ == '__main__':
     unittest.main()
