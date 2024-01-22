@@ -40,6 +40,16 @@ class TestUrls(unittest.TestCase):
         self.assertEqual(test_uri, str(parsed_url))
         parsed_url = ParsedUrl(test_uri, default_scheme='https')
         self.assertEqual("https:" + test_uri, str(parsed_url))
+        # test that mailto and tel links don't get defaulted
+        test_uri = 'mailto:me@mail.com?subject=mysubject&body=mybody'
+        parsed_url = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000', default_filepath='/booger/')
+        self.assertEqual("mailto", str(parsed_url.scheme))
+        self.assertEqual(test_uri, parsed_url.url)
+        test_uri = 'tel: 222.222.2222'
+        parsed_url = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000', default_filepath='/booger/')
+        self.assertEqual("tel", str(parsed_url.scheme))
+        self.assertEqual(test_uri, parsed_url.url)
+
 
     # --- basic retrieval
     # -------------------
