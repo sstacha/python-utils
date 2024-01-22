@@ -64,9 +64,11 @@ class ParsedUrl:
             raise Exception(
                 f'Attempted to parse [{str(self.url_filter(url))}].  Url parameter must exist and be a relative or absolute url after filtering!')
         self.parsed = urlsplit(self.url_filter(url), default_scheme or "", allow_fragments=allow_fragments)
-        if default_netloc and not self.parsed.netloc:
+        if default_scheme and not self.parsed.scheme and self.netloc:
+            self.scheme = default_scheme
+        if default_netloc and not self.parsed.netloc and self.scheme in ['http', 'https']:
             self.netloc = default_netloc
-        if default_filepath and default_filepath not in self.filepath:
+        if default_filepath and default_filepath not in self.filepath and self.scheme in ['http', 'https']:
             # we have a parent path we need to append to the existing one
             new_path = str(PurePath(default_filepath, self.path))
             # note: I don't want .. since this is web urls; using normpath to remove them unless symlinks is true
@@ -80,8 +82,6 @@ class ParsedUrl:
             if new_path.endswith(default_filepath) or new_path.endswith(default_filepath[:-1]) and not new_path.endswith('/'):
                 new_path += '/'
             self.path = new_path
-        if default_scheme and not self.parsed.scheme and self.netloc:
-            self.scheme = default_scheme
         # one last correction; if we have a scheme but no netloc lets omit the scheme so it doesn't give bad results
         if not self.parsed.netloc and self.parsed.scheme:
             self.parsed = self.parsed._replace(scheme='')
@@ -246,4 +246,8 @@ if __name__ == "__main__":
     print(purl)
     test_uri = "../products/"
     purl = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000', default_filepath='/')
+    print(purl)
+    # test mailto links
+    test_uri = 'mailto:me@mail.com?subject=mysubject&body=mybody'
+    purl = ParsedUrl(test_uri, default_scheme='http', default_netloc='localhost:8000')
     print(purl)
