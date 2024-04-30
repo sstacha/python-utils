@@ -11,10 +11,9 @@ from collections import defaultdict
 
 class JSON:
     """ simple json class to encapsulate basic json operations """
-    # the base implementation will be dict
-    json_dict = {}
-
     def __init__(self, json_string: str or None = None, encode_ampersands: bool = False):
+        # data is core python objects (list, dict, object, etc) from the core python JSON.loads
+        self.data = None
         self.encode_ampersands = encode_ampersands
         self.from_json_string(json_string)
 
@@ -28,7 +27,7 @@ class JSON:
             if self.encode_ampersands:
                 regex = re.compile(r"&(?!amp;|lt;|gt;)")
                 json_string = regex.sub("&amp;", json_string)
-            self.json_dict = json.loads(json_string)
+            self.data = json.loads(json_string)
         return self
 
     def from_json_file(self, json_file_path: str):
@@ -43,26 +42,18 @@ class JSON:
             if self.encode_ampersands:
                 regex = re.compile(r"&(?!amp;|lt;|gt;)")
                 json_string = regex.sub("&amp;", json_string)
-            self.json_dict = json.loads(json_string)
+            self.data = json.loads(json_string)
         return self
 
-    def to_dict(self) -> dict:
-        """
-        output to dict
-        :return: dict
-        """
-        return self.json_dict
-
     def __str__(self):
-        return str(self.json_dict)
+        return str(self.data)
 
 
 class XML:
-    """ simple xml class to encapsulate basic xml operations """
-    # the base implementation will be Etree from the base python lib
-    xml_tree = None
-
+    """ simple xml class to encapsulate basic xml operations using build in python ETree """
     def __init__(self, xml_string: str or None = None, encode_ampersands: bool = False):
+        # data is core python ElementTree object
+        self.data = None
         self.encode_ampersands = encode_ampersands
         self.from_xml_string(xml_string)
 
@@ -76,7 +67,7 @@ class XML:
             if self.encode_ampersands:
                 regex = re.compile(r"&(?!amp;|lt;|gt;)")
                 xml_string = regex.sub("&amp;", xml_string)
-            self.xml_tree = Etree.fromstring(xml_string)
+            self.data = Etree.fromstring(xml_string)
         return self
 
     def from_xml_file(self, xml_file_path: str):
@@ -96,7 +87,7 @@ class XML:
         else:
             tree = Etree.parse(xml_file_path)
             tree = tree.getroot()
-        self.xml_tree = tree
+        self.data = tree
         return self
 
     def to_dict(self) -> dict:
@@ -104,10 +95,10 @@ class XML:
         output to dict
         :return: dict
         """
-        return XML.tree_to_dict(self.xml_tree)
+        return XML.tree_to_dict(self.data)
 
     @staticmethod
-    def tree_to_dict(t) -> dict:
+    def tree_to_dict(t: Etree) -> dict:
         """
         Convert an etree structure to a dictionary of values
         :param t: etree instance
@@ -133,6 +124,6 @@ class XML:
         return d
 
     def __str__(self):
-        if self.xml_tree:
-            return Etree.tostring(self.xml_tree, encoding='unicode')
+        if self.data:
+            return Etree.tostring(self.data, encoding='unicode')
         return ""

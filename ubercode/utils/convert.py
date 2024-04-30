@@ -250,3 +250,31 @@ def to_mask(value: str or None) -> str or None:
         _mask += value[-_iqtr:]
     return _mask
 
+def obj_to_str(obj, property_filter_list=None):
+    """
+    Mostly used for debugging.  Very useful to print the properties of an object on a line; condensing reasonably
+
+    :param obj: the object to inspect properties for
+    :param property_filter_list: any property names we want to omit
+    :return: a string containing the outputted properties
+    """
+    attbuf = ""
+    for key, value in vars(obj).items():
+        if property_filter_list and key in property_filter_list:
+            continue
+        if not key.startswith('__'):
+            if len(attbuf) > 0:
+                attbuf += ", "
+            # show the first 50 chars and last 25 chars
+            this_content = str(value)
+            this_content = this_content.replace('\n', ' ').replace('\r', '').strip()
+            if this_content:
+                if len(this_content) > 150:
+                    attbuf += str(key) + ": [" + this_content[0:25] + " ... " + this_content[
+                                                                                len(this_content) - 25:len(
+                                                                                    this_content)] + "]"
+                else:
+                    attbuf += str(key) + ": " + this_content or ""
+            else:
+                attbuf += str(key) + ": " + this_content or ""
+    return "[" + attbuf + "]"
